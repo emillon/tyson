@@ -106,20 +106,6 @@ unicodize ( ( _ ,  u ,  _ )
 
 unicodize a = centerOf a
 
--- unicodize ( ( _ ,  u ,  _ )
---           , ( l , '+',  r )
---           , ( _ ,  d ,  _ )
---           ) | connects D u && connects U d && connects L r && connects R l = '┼'
--- unicodize ( ( _ ,  u ,  _ )
---           , (' ', '+',  r )
---           , ( _ ,  d ,  _ )
---           ) | connects D u && connects L r && connects U d = '├'
--- unicodize ( ( _ ,  u ,  _ )
---           , ( l , '+',  _ )
---           , ( _ ,  d ,  _ )
---           ) | connects D u && connects R l && connects U d = '┤'
-
-
 allInput :: IO [String]
 allInput = fmap lines getContents
 
@@ -129,14 +115,6 @@ main = do
   mapM_ putStrLn (contextMap unicodize (pad ss))
     where
       pad x = ([repeat ' '] ++ (map (++ replicate 50 ' ') x) ++ [repeat ' '])
-
---main :: IO ()
---main = do
---  ss <- allInput
---  let c = ctx ss
---  forM_ c $ \x -> do
---    pp x
---    putStrLn "-+-+-+-+-+-+-+-+-+-+-+-"
 
 examples :: [([String], [String])]
 examples =
