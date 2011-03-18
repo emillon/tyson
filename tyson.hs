@@ -6,41 +6,37 @@
 -- think this stuff is worth it, you can buy me a beer in return.
 -------------------------------------------------------------------------------
 
-type ThreeOf a = (a, a, a)
-
-type CChar = ThreeOf (ThreeOf Char)
+type Context = (Char, Char, Char)
+type Context2D = (Context, Context, Context)
 
 c0 :: String -> [(Char, Char, Char)]
 c0 s =
-  zip3 a b c
-    where (a, b, c) = c0' ([' '] ++ s ++ [' '])
+  zip3 ps ps2 (tail ps2)
+    where ps = ([' '] ++ ps2)
+          ps2 = s ++ [' ']
 
-c0' :: [a] -> ([a], [a], [a])
-c0' s = (s, t, tail t)
-  where t = tail s
-
-flipc0 :: (String, String, String) -> [CChar]
+flipc0 :: (String, String, String) -> [Context2D]
 flipc0 (l0, l1, l2) = zip3 (c0 l0) (c0 l1) (c0 l2)
 
-ctx :: [String] -> [[CChar]]
+ctx :: [String] -> [[Context2D]]
 ctx l0 = map flipc0 $ zip3 l t (tail t)
   where t = tail l
         l = [pad] ++ l0 ++ [pad]
         pad = repeat ' '
 
-pp :: [CChar] -> IO ()
+pp :: [Context2D] -> IO ()
 pp = mapM_ pp1
   where
     pp1 y = (mapM_ (\ x -> (putStrLn (pp2 x))) $ pp2 y) >> putStrLn "---"
     pp2 (a, b, c) = [a, b, c]
 
-contextMap :: (CChar -> Char) -> [String] -> [String]
+contextMap :: (Context2D -> Char) -> [String] -> [String]
 contextMap f ss =
   map (map f) c
     where
       c = ctx ss
 
-centerOf :: CChar -> Char
+centerOf :: Context2D -> Char
 centerOf (_, (_, x, _), _) = x
 
 data Dir = U | D | L | R
@@ -59,7 +55,7 @@ connects R '-' = True
 connects L '-' = True
 connects _ _ = False
 
-unicodize :: CChar -> Char
+unicodize :: Context2D -> Char
 unicodize ( ( _ ,  _ ,  _ )
           , ( l , '-',  r )
           , ( _ ,  _ ,  _ )
@@ -133,3 +129,19 @@ main = do
 --  forM_ c $ \x -> do
 --    pp x
 --    putStrLn "-+-+-+-+-+-+-+-+-+-+-+-"
+
+examples :: [([String], [String])]
+examples =
+  [(["+--+"
+    ,"|  |"
+    ,"+--+"
+    ]
+   ,["┌──┐"
+    ,"│  │"
+    ,"└──┘"
+    ]
+   )
+  ]
+
+testExamples :: [([String], [String])] -> Bool
+testExamples = all (\ (x, y) -> y == contextMap unicodize x)
