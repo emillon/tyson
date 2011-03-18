@@ -141,7 +141,33 @@ examples =
     ,"└──┘"
     ]
    )
+  ,([" ^ "
+    ,"<+>"
+    ," v "
+    ]
+   ,[" △ "
+    ,"◁┼▷"
+    ," ▽ "
+    ]
+   )
   ]
 
 testExamples :: [([String], [String])] -> Bool
 testExamples = all (\ (x, y) -> y == contextMap unicodize x)
+
+testIO :: [([String], [String])] -> IO ()
+testIO =
+  mapM_ (\ (src, expected) ->
+    let result = contextMap unicodize src in     
+    if (result == expected)
+      then putStrLn "OK"
+      else do
+        putStrLn "FAIL"
+        putStrLn "src :"
+        mapM_ putStrLn src
+        putStrLn "expected :"
+        mapM_ putStrLn expected
+        putStrLn "got :"
+        mapM_ putStrLn result
+    )
+
