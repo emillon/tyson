@@ -10,19 +10,19 @@ type Context = (Char, Char, Char)
 type Context2D = (Context, Context, Context)
 
 c0 :: String -> [(Char, Char, Char)]
-c0 s =
+c0 s = padZip3 s ' '
+
+padZip3 :: [a] -> a -> [(a, a, a)]
+padZip3 xs pad =
   zip3 ps ps2 (tail ps2)
-    where ps = ([' '] ++ ps2)
-          ps2 = s ++ [' ']
+    where ps = ([pad] ++ ps2)
+          ps2 = xs ++ [pad]
 
 flipc0 :: (String, String, String) -> [Context2D]
 flipc0 (l0, l1, l2) = zip3 (c0 l0) (c0 l1) (c0 l2)
 
 ctx :: [String] -> [[Context2D]]
-ctx l0 = map flipc0 $ zip3 l t (tail t)
-  where t = tail l
-        l = [pad] ++ l0 ++ [pad]
-        pad = repeat ' '
+ctx l0 = map flipc0 $ padZip3 l0 (repeat ' ')
 
 pp :: [Context2D] -> IO ()
 pp = mapM_ pp1
