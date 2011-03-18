@@ -49,9 +49,7 @@ connects D '^' = True
 connects U 'v' = True
 connects R '<' = True
 connects L '>' = True
-
 connects R '-' = True
-
 connects L '-' = True
 connects _ _ = False
 
@@ -59,11 +57,21 @@ unicodize :: Context2D -> Char
 unicodize ( ( _ ,  _ ,  _ )
           , ( l , '-',  r )
           , ( _ ,  _ ,  _ )
-          ) | connects L r && connects R l = '─'
+          ) = hLine (connects L r) (connects R l)
+                where
+                  hLine True  True  = '─'
+                  hLine False True  = '╴'
+                  hLine True  False = '╶'
+                  hLine False False = '-'
 unicodize ( ( _ ,  u ,  _ )
           , ( _ , '|',  _ )
           , ( _ ,  d ,  _ )
-          ) | connects D u && connects U d = '│'
+          ) = vLine (connects D u) (connects U d)
+                where
+                  vLine True  True  = '│'
+                  vLine False True  = '╷'
+                  vLine True  False = '╵'
+                  vLine False False = '|'
 unicodize ( ( _ ,  _ ,  _ )
           , ( _ , '^',  _ )
           , ( _ ,  d ,  _ )
@@ -148,6 +156,24 @@ examples =
    ,[" △ "
     ,"◁┼▷"
     ," ▽ "
+    ]
+   )
+  ,(["|  |"
+    ,"+--+"
+    ,"|  |"
+    ]
+   ,["╷  ╷"
+    ,"├──┤"
+    ,"╵  ╵"
+    ]
+   )
+  ,(["-+-"
+    ," | "
+    ,"-+-"
+    ]
+   ,["╶┬╴" 
+    ," │ "
+    ,"╶┴╴"
     ]
    )
   ]
