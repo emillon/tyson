@@ -27,12 +27,6 @@ flipc0 (l0, l1, l2) = zip3 (c0 l0) (c0 l1) (c0 l2)
 ctx :: [String] -> [[Context2D]]
 ctx l0 = map flipc0 $ padZip3 l0 (repeat ' ')
 
-pp :: [Context2D] -> IO ()
-pp = mapM_ pp1
-  where
-    pp1 y = mapM_ (putStrLn . pp2) (pp2 y) >> putStrLn "---"
-    pp2 (a, b, c) = [a, b, c]
-
 contextMap :: (Context2D -> Char) -> [String] -> [String]
 contextMap f ss =
   map (map f) c
@@ -169,9 +163,6 @@ examples =
     ]
    )
   ]
-
-testExamples :: [([String], [String])] -> Bool
-testExamples = all (\ (x, y) -> y == contextMap unicodize x)
 
 testIO :: [([String], [String])] -> IO Bool
 testIO cs = do
