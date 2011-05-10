@@ -6,6 +6,9 @@
 -- think this stuff is worth it, you can buy me a beer in return.
 -------------------------------------------------------------------------------
 
+import System.Environment
+import System.Exit
+
 type Context = (Char, Char, Char)
 type Context2D = (Context, Context, Context)
 
@@ -111,6 +114,17 @@ allInput = fmap lines getContents
 
 main :: IO ()
 main = do
+  args <- getArgs
+  case args of
+    ["--runtests"] -> do
+                        ok <- testIO examples
+                        if ok
+                          then exitSuccess
+                          else exitFailure
+    _ -> main'
+
+main' :: IO ()
+main' = do
   ss <- allInput
   mapM_ putStrLn (contextMap unicodize (pad ss))
     where
@@ -159,19 +173,24 @@ examples =
 testExamples :: [([String], [String])] -> Bool
 testExamples = all (\ (x, y) -> y == contextMap unicodize x)
 
-testIO :: [([String], [String])] -> IO ()
-testIO =
-  mapM_ (\ (src, expected) ->
-    let result = contextMap unicodize src in     
-    if result == expected
-      then putStrLn "OK"
-      else do
-        putStrLn "FAIL"
-        putStrLn "src :"
-        mapM_ putStrLn src
-        putStrLn "expected :"
-        mapM_ putStrLn expected
-        putStrLn "got :"
-        mapM_ putStrLn result
-    )
+testIO :: [([String], [String])] -> IO Bool
+testIO cs = do
+  let rsM = mapM testCaseIO cs
+  rs <- rsM
+  return $ and rs
 
+testCaseIO :: ([String], [String]) -> IO Bool
+testCaseIO (src, expected) = do
+  let result = contextMap unicodize src
+  let ok = result == expected
+  if ok
+    then putStrLn "OK"
+    else do
+      putStrLn "FAIL"
+      putStrLn "src :"
+      mapM_ putStrLn src
+      putStrLn "expected :"
+      mapM_ putStrLn expected
+      putStrLn "got :"
+      mapM_ putStrLn result
+  return ok
