@@ -15,7 +15,7 @@ c0 s = padZip3 s ' '
 padZip3 :: [a] -> a -> [(a, a, a)]
 padZip3 xs pad =
   zip3 ps ps2 (tail ps2)
-    where ps = ([pad] ++ ps2)
+    where ps = [pad] ++ ps2
           ps2 = xs ++ [pad]
 
 flipc0 :: (String, String, String) -> [Context2D]
@@ -27,7 +27,7 @@ ctx l0 = map flipc0 $ padZip3 l0 (repeat ' ')
 pp :: [Context2D] -> IO ()
 pp = mapM_ pp1
   where
-    pp1 y = (mapM_ (\ x -> (putStrLn (pp2 x))) $ pp2 y) >> putStrLn "---"
+    pp1 y = mapM_ (putStrLn . pp2) (pp2 y) >> putStrLn "---"
     pp2 (a, b, c) = [a, b, c]
 
 contextMap :: (Context2D -> Char) -> [String] -> [String]
@@ -114,7 +114,7 @@ main = do
   ss <- allInput
   mapM_ putStrLn (contextMap unicodize (pad ss))
     where
-      pad x = ([repeat ' '] ++ (map (++ replicate 50 ' ') x) ++ [repeat ' '])
+      pad x = [repeat ' '] ++ map (++ replicate 50 ' ') x ++ [repeat ' ']
 
 examples :: [([String], [String])]
 examples =
@@ -163,7 +163,7 @@ testIO :: [([String], [String])] -> IO ()
 testIO =
   mapM_ (\ (src, expected) ->
     let result = contextMap unicodize src in     
-    if (result == expected)
+    if result == expected
       then putStrLn "OK"
       else do
         putStrLn "FAIL"
